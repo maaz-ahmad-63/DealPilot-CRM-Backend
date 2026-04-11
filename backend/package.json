@@ -1,0 +1,41 @@
+{
+  "name": "dealpilot-backend",
+  "version": "1.0.0",
+  "description": "DealPilot - AI-Powered CRM System Backend API",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "test": "jest"
+  },
+  "keywords": [
+    "crm",
+    "ai",
+    "sales",
+    "dealpilot"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.3.0",
+    "bcryptjs": "^2.4.3",
+    "bull": "^4.16.5",
+    "cors": "^2.8.5",
+    "csv-parser": "^3.2.0",
+    "dotenv": "^16.6.1",
+    "express": "^4.18.2",
+    "express-validator": "^7.3.2",
+    "joi": "^17.9.1",
+    "jsonwebtoken": "^9.0.0",
+    "mongoose": "^7.0.0",
+    "multer": "^2.1.1",
+    "node-cron": "^3.0.2",
+    "redis": "^5.11.0",
+    "socket.io": "^4.8.3",
+    "twilio": "^4.0.0"
+  },
+  "devDependencies": {
+    "jest": "^29.5.0",
+    "nodemon": "^2.0.20"
+  }
+}

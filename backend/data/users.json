@@ -1,0 +1,16 @@
+[
+  {
+    "id": "user_1775321401138",
+    "name": "Maaz Ahmad",
+    "email": "maaz@example.com",
+    "passwordHash": "$2a$10$CawJUHQmjGG7mOPTGRvHA.msVgKToX/AYBpeRSss5XEzrVv9XnYfa",
+    "createdAt": "2026-04-04T16:50:01.138Z"
+  },
+  {
+    "id": "user_1775885685610",
+    "name": "MAAZ AHMAD",
+    "email": "maazbinayaz5555@gmail.com",
+    "passwordHash": "$2a$10$U9BH2zycpWW2q73njregTOW0FO1tPN4V1PSt/2GgdxoQV8xN/T9sO",
+    "createdAt": "2026-04-11T05:34:45.610Z"
+  }
+]
