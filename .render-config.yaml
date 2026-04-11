@@ -1,0 +1,9 @@
+version: 1
+services:
+  - type: web
+    name: dealpilot-backend
+    runtime: docker
+    build:
+      dockerfile: Dockerfile
+    region: oregon
+    plan: starter
