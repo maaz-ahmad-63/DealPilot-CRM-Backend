@@ -3,8 +3,8 @@ FROM node:18-alpine AS builder
 
 WORKDIR /app
 
-# Copy package files
-COPY package*.json ./
+# Copy package files from backend directory
+COPY backend/package*.json ./
 
 # Install dependencies
 RUN npm install --only=production
@@ -20,9 +20,9 @@ RUN apk add --no-cache curl
 # Copy installed dependencies from builder
 COPY --from=builder /app/node_modules ./node_modules
 
-# Copy application files
-COPY package*.json ./
-COPY src/ ./src/
+# Copy application files from backend directory
+COPY backend/package*.json ./
+COPY backend/src/ ./src/
 
 # Create necessary directories
 RUN mkdir -p uploads logs data
