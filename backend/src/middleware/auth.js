@@ -17,4 +17,6 @@ const authMiddleware = (req, res, next) => {
   }
 };
 
+// Export as both default and named export for compatibility
 module.exports = authMiddleware;
+module.exports.authenticateToken = authMiddleware;
