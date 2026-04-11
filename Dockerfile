@@ -8,6 +8,10 @@ COPY backend/ .
 # Install production dependencies
 RUN npm install --omit=dev
 
+# Create necessary directories with proper permissions
+RUN mkdir -p /app/logs /app/data /app/uploads && \
+    chown -R 1001:1001 /app
+
 # Create app user for security
 RUN addgroup -g 1001 -S nodejs && adduser -S nodejs -u 1001
 USER nodejs
