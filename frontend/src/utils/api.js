@@ -1,6 +1,9 @@
 import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:5001/api';
+// Use environment variable or default to Render backend
+const API_BASE_URL = process.env.REACT_APP_API_URL || 
+                     process.env.VITE_API_URL || 
+                     'https://dealpilot-backend.onrender.com/api';
 
 const api = axios.create({
   baseURL: API_BASE_URL,
