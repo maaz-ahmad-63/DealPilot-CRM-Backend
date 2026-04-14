@@ -1,8 +1,8 @@
 import axios from 'axios';
 
-// Use environment variable or default to Render backend
-const API_BASE_URL = process.env.REACT_APP_API_URL || 
-                     process.env.VITE_API_URL || 
+// Use Vite environment variables (import.meta.env for browser)
+// Falls back to Render backend URL if not configured
+const API_BASE_URL = import.meta.env.VITE_API_URL || 
                      'https://dealpilot-backend.onrender.com/api';
 
 const api = axios.create({
