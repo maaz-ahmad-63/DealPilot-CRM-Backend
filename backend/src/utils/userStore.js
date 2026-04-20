@@ -1,44 +1,49 @@
-const fs = require('fs/promises');
-const path = require('path');
+const User = require('../models/User');
 
-const dataDir = path.join(__dirname, '..', '..', 'data');
-const usersFile = path.join(dataDir, 'users.json');
-
-async function ensureUsersFile() {
-  await fs.mkdir(dataDir, { recursive: true });
+async function findUserByEmail(email) {
   try {
-    await fs.access(usersFile);
+    const user = await User.findOne({ email: email.toLowerCase() });
+    return user;
   } catch (error) {
-    await fs.writeFile(usersFile, '[]\n', 'utf8');
+    console.error('Error finding user by email:', error);
+    throw error;
+  }
+}
+
+async function createUser(userData) {
+  try {
+    const user = new User({
+      email: userData.email.toLowerCase(),
+      name: userData.name,
+      passwordHash: userData.passwordHash,
+    });
+    await user.save();
+    return {
+      id: user._id.toString(),
+      email: user.email,
+      name: user.name,
+      createdAt: user.createdAt,
+    };
+  } catch (error) {
+    console.error('Error creating user:', error);
+    throw error;
   }
 }
 
 async function readUsers() {
-  await ensureUsersFile();
-  const raw = await fs.readFile(usersFile, 'utf8');
   try {
-    const users = JSON.parse(raw);
-    return Array.isArray(users) ? users : [];
+    const users = await User.find().lean();
+    return users.map(user => ({
+      id: user._id.toString(),
+      email: user.email,
+      name: user.name,
+      passwordHash: user.passwordHash,
+      createdAt: user.createdAt,
+    }));
   } catch (error) {
-    return [];
+    console.error('Error reading users:', error);
+    throw error;
   }
-}
-
-async function writeUsers(users) {
-  await ensureUsersFile();
-  await fs.writeFile(usersFile, `${JSON.stringify(users, null, 2)}\n`, 'utf8');
-}
-
-async function findUserByEmail(email) {
-  const users = await readUsers();
-  return users.find((user) => user.email.toLowerCase() === email.toLowerCase()) || null;
-}
-
-async function createUser(user) {
-  const users = await readUsers();
-  users.push(user);
-  await writeUsers(users);
-  return user;
 }
 
 module.exports = {
