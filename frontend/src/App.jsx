@@ -11,6 +11,7 @@ import { ThemeProvider } from './context/ThemeContext';
 // Components
 import { Sidebar } from './components/Sidebar';
 import { NotificationCenter } from './components/NotificationCenter';
+import { ErrorBoundary } from './components/ErrorBoundary';
 
 // Pages
 import { Login } from './pages/Login';
@@ -89,16 +90,18 @@ function AppLayout() {
 
 export default function App() {
   return (
-    <Router>
-      <ThemeProvider>
-        <AuthProvider>
-          <CRMProvider>
-            <NotificationProvider>
-              <AppLayout />
-            </NotificationProvider>
-          </CRMProvider>
-        </AuthProvider>
-      </ThemeProvider>
-    </Router>
+    <ErrorBoundary>
+      <Router>
+        <ThemeProvider>
+          <AuthProvider>
+            <CRMProvider>
+              <NotificationProvider>
+                <AppLayout />
+              </NotificationProvider>
+            </CRMProvider>
+          </AuthProvider>
+        </ThemeProvider>
+      </Router>
+    </ErrorBoundary>
   );
 }
