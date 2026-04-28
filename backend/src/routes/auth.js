@@ -47,13 +47,16 @@ router.post(
       }
 
       const { name, email, password } = req.body;
+      console.log('📝 Signup attempt:', { name, email });
       const existingUser = await findUserByEmail(email);
 
       if (existingUser) {
+        console.log('⚠️ User already exists');
         return res.status(409).json({ message: 'User already exists' });
       }
 
       const passwordHash = await bcrypt.hash(password, 10);
+      console.log('🔐 Password hashed, hash length:', passwordHash.length);
       const user = await createUser({
         id: `user_${Date.now()}`,
         name: name.trim(),
@@ -61,6 +64,7 @@ router.post(
         passwordHash,
         createdAt: new Date().toISOString(),
       });
+      console.log('✅ User created:', { id: user.id, email: user.email });
 
       const token = createToken(user);
       return res.status(201).json({
@@ -90,14 +94,19 @@ router.post(
       }
 
       const { email, password } = req.body;
+      console.log('🔍 Login attempt:', { email });
       const user = await findUserByEmail(email);
+      console.log('👤 User found:', user ? 'Yes' : 'No');
 
       if (!user) {
+        console.log('❌ User not found');
         return res.status(401).json({ message: 'Invalid email or password' });
       }
 
       const passwordMatches = await bcrypt.compare(password, user.passwordHash);
+      console.log('🔐 Password match:', passwordMatches);
       if (!passwordMatches) {
+        console.log('❌ Password mismatch');
         return res.status(401).json({ message: 'Invalid email or password' });
       }
 

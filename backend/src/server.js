@@ -4,6 +4,7 @@ const http = require('http');
 require('dotenv').config();
 
 const connectDB = require('./utils/database');
+const seedDemoUser = require('./utils/seedDemoUser');
 const WebSocketManager = require('./websocket/socketManager');
 
 // Middleware
@@ -19,6 +20,9 @@ app.use(express.urlencoded({ extended: true }));
 
 // Connect to database
 connectDB();
+
+// Seed demo user on startup
+seedDemoUser();
 
 // Routes (Phase 2 - SaaS with Workspace)
 const campaignsRoutes = require('./routes/campaigns');

@@ -48,13 +48,17 @@ export function AuthProvider({ children }) {
     setLoading(true);
     setError(null);
     try {
+      console.log('🔐 Attempting login with:', { email });
+      console.log('📡 API Base URL:', import.meta.env.VITE_API_URL);
       const response = await authAPI.login(email, password);
+      console.log('✅ Login successful:', response.data);
       const { token, user } = response.data;
       persistAuthSession(token, user);
       setToken(token);
       setUser(user);
       return { success: true };
     } catch (err) {
+      console.error('❌ Login error:', err);
       const message = err.response?.data?.message || 'Login failed';
       setError(message);
       return { success: false, error: message };
