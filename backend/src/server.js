@@ -21,8 +21,8 @@ app.use(express.urlencoded({ extended: true }));
 // Connect to database
 connectDB();
 
-// Seed demo user on startup
-seedDemoUser();
+// Seed demo user on startup (fire and forget, non-blocking)
+seedDemoUser().catch(err => console.error('Failed to seed demo user:', err));
 
 // Routes (Phase 2 - SaaS with Workspace)
 const campaignsRoutes = require('./routes/campaigns');
