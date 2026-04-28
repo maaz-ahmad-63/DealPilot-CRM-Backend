@@ -6,27 +6,28 @@ import { PageTransition } from '../utils/animations';
 import { useCRM } from '../context/CRMContext';
 
 export function Dashboard() {
-  const { dashboardStats, dashboardChartData, dealStageData, recentActivity, smartInsights, hotLeads, followupReminders, deals, leadIntelligence, teamMembers } = useCRM();
+  const crm = useCRM();
+  const { dashboardStats = [], dashboardChartData = [], dealStageData = [], recentActivity = [], smartInsights = [], hotLeads = [], followupReminders = [], deals = [], leadIntelligence = [], teamMembers = [] } = crm || {};
   
   // Calculate enhanced metrics
   const metrics = useMemo(() => {
-    const wonDeals = deals.filter((d) => d.stage === 'Closed Won');
-    const lostDeals = deals.filter((d) => d.stage === 'Closed Lost');
+    const wonDeals = (deals || []).filter((d) => d.stage === 'Closed Won');
+    const lostDeals = (deals || []).filter((d) => d.stage === 'Closed Lost');
     const totalClosed = wonDeals.length + lostDeals.length;
     const winRate = totalClosed > 0 ? Math.round((wonDeals.length / totalClosed) * 100) : 0;
     
     // Lead conversion rate (Converted leads / Total leads)
-    const convertedLeads = leadIntelligence.filter((l) => l.status === 'Converted').length;
-    const conversionRate = leadIntelligence.length > 0 ? Math.round((convertedLeads / leadIntelligence.length) * 100) : 0;
+    const convertedLeads = (leadIntelligence || []).filter((l) => l.status === 'Converted').length;
+    const conversionRate = (leadIntelligence || []).length > 0 ? Math.round((convertedLeads / (leadIntelligence || []).length) * 100) : 0;
     
     // Average deal cycle time (simplified - using probability as proxy for time in cycle)
-    const avgCycleTime = deals.length > 0 ? Math.round(deals.reduce((sum, d) => sum + (100 - d.probability), 0) / deals.length) : 0;
+    const avgCycleTime = (deals || []).length > 0 ? Math.round((deals || []).reduce((sum, d) => sum + (100 - (d.probability || 0)), 0) / (deals || []).length) : 0;
     
     // Sales velocity (deals closed per month - simplified)
     const salesVelocity = wonDeals.length;
     
     // Top performers (by won deals)
-    const topPerformers = teamMembers
+    const topPerformers = (teamMembers || [])
       ?.map((member) => ({
         name: member.name,
         wonDeals: wonDeals.filter((d) => d.owner === member.name).length,
@@ -40,7 +41,7 @@ export function Dashboard() {
     return { winRate, conversionRate, avgCycleTime, salesVelocity, topPerformers };
   }, [deals, leadIntelligence, teamMembers]);
   
-  const stats = dashboardStats.map((stat) => ({
+  const stats = (dashboardStats || []).map((stat) => ({
     ...stat,
     icon:
       stat.label === 'Total Leads'
