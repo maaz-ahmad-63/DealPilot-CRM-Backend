@@ -7,7 +7,24 @@ import { useCRM } from '../context/CRMContext';
 
 export function Dashboard() {
   const crm = useCRM();
-  const { dashboardStats = [], dashboardChartData = [], dealStageData = [], recentActivity = [], smartInsights = [], hotLeads = [], followupReminders = [], deals = [], leadIntelligence = [], teamMembers = [] } = crm || {};
+  const { 
+    dashboardStats = [], 
+    dashboardChartData = [], 
+    dealStageData = [], 
+    recentActivity = [], 
+    smartInsights = [], 
+    hotLeads = [], 
+    followupReminders = [], 
+    deals = [], 
+    leadIntelligence = [], 
+    teamMembers = [],
+    backendLeads = [],
+    loading = false
+  } = crm || {};
+  
+  // Use backend leads if available, otherwise fallback to demo data
+  const displayLeads = backendLeads && backendLeads.length > 0 ? backendLeads : leadIntelligence;
+  const hasRealData = backendLeads && backendLeads.length > 0;
   
   // Calculate enhanced metrics
   const metrics = useMemo(() => {
@@ -17,8 +34,8 @@ export function Dashboard() {
     const winRate = totalClosed > 0 ? Math.round((wonDeals.length / totalClosed) * 100) : 0;
     
     // Lead conversion rate (Converted leads / Total leads)
-    const convertedLeads = (leadIntelligence || []).filter((l) => l.status === 'Converted').length;
-    const conversionRate = (leadIntelligence || []).length > 0 ? Math.round((convertedLeads / (leadIntelligence || []).length) * 100) : 0;
+    const convertedLeads = (displayLeads || []).filter((l) => l.status === 'Converted').length;
+    const conversionRate = (displayLeads || []).length > 0 ? Math.round((convertedLeads / (displayLeads || []).length) * 100) : 0;
     
     // Average deal cycle time (simplified - using probability as proxy for time in cycle)
     const avgCycleTime = (deals || []).length > 0 ? Math.round((deals || []).reduce((sum, d) => sum + (100 - (d.probability || 0)), 0) / (deals || []).length) : 0;
@@ -39,7 +56,7 @@ export function Dashboard() {
       .slice(0, 3) || [];
 
     return { winRate, conversionRate, avgCycleTime, salesVelocity, topPerformers };
-  }, [deals, leadIntelligence, teamMembers]);
+  }, [deals, displayLeads, teamMembers]);
   
   const stats = (dashboardStats || []).map((stat) => ({
     ...stat,
@@ -71,6 +88,35 @@ export function Dashboard() {
   return (
     <PageTransition>
       <div className="p-8 max-w-7xl mx-auto">
+        {/* Data Source Banner */}
+        {loading && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg"
+          >
+            <p className="text-sm text-blue-800">📡 Loading your data...</p>
+          </motion.div>
+        )}
+        {hasRealData && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg"
+          >
+            <p className="text-sm text-green-800">✅ Showing your real data ({backendLeads.length} leads)</p>
+          </motion.div>
+        )}
+        {!hasRealData && !loading && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-lg"
+          >
+            <p className="text-sm text-amber-800">📋 Showing demo data. Create your first lead to see real data here.</p>
+          </motion.div>
+        )}
+        
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}

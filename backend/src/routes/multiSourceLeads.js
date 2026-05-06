@@ -12,7 +12,7 @@ const authMiddleware = require('../middleware/auth');
  * POST /api/leads/sources/website-form
  * Receive lead from website form submission
  */
-router.post('/sources/website-form', async (req, res) => {
+router.post('/sources/website-form', authMiddleware, async (req, res) => {
   try {
     const {
       firstName,
@@ -21,9 +21,10 @@ router.post('/sources/website-form', async (req, res) => {
       phone,
       company,
       message,
-      formData,
-      userId = process.env.DEFAULT_USER_ID
+      formData
     } = req.body;
+    
+    const userId = req.user._id;
 
     // Validate required fields
     if (!firstName || !email) {
@@ -101,12 +102,14 @@ router.post('/sources/website-form', async (req, res) => {
  */
 router.post('/sources/whatsapp/webhook', async (req, res) => {
   try {
-    const { messages } = req.body;
+    const { messages, userId } = req.body;
 
     if (!messages || messages.length === 0) {
       return res.status(400).json({ success: false, message: 'No messages received' });
     }
-
+    
+    // Use provided userId or fall back to environment variable for webhook calls
+    const defaultUserId = userId || process.env.DEFAULT_USER_ID;
     const results = [];
 
     for (const msg of messages) {
@@ -139,7 +142,7 @@ router.post('/sources/whatsapp/webhook', async (req, res) => {
               whatsapp: from
             },
             message: body,
-            userId: process.env.DEFAULT_USER_ID,
+            userId: defaultUserId,
             status: 'new',
             tags: ['whatsapp-inbound'],
             sourceData: {
@@ -211,15 +214,16 @@ router.post('/sources/whatsapp/webhook', async (req, res) => {
  * POST /api/leads/sources/instagram
  * Receive Instagram Direct Messages
  */
-router.post('/sources/instagram', async (req, res) => {
+router.post('/sources/instagram', authMiddleware, async (req, res) => {
   try {
     const {
       instagramHandle,
       message,
       senderName,
-      timestamp,
-      userId = process.env.DEFAULT_USER_ID
+      timestamp
     } = req.body;
+
+    const userId = req.user._id;
 
     if (!instagramHandle || !message) {
       return res.status(400).json({

@@ -1,9 +1,16 @@
 import axios from 'axios';
 
-// Use Vite environment variables (import.meta.env for browser)
-// Falls back to Render backend URL if not configured
-const API_BASE_URL = import.meta.env.VITE_API_URL || 
-                     'https://dealpilot-backend.onrender.com/api';
+const DEFAULT_API_BASE_URL = 'https://dealpilot-crm-backend.onrender.com/api';
+
+// Prefer the live backend URL unless the configured value points to the same service.
+// This avoids stale Netlify environment variables sending login requests to the wrong host.
+const configuredApiUrl = import.meta.env.VITE_API_URL;
+const API_BASE_URL =
+  configuredApiUrl && configuredApiUrl.includes('dealpilot-crm-backend.onrender.com')
+    ? configuredApiUrl
+    : DEFAULT_API_BASE_URL;
+
+console.log('📡 API base URL:', API_BASE_URL);
 
 const api = axios.create({
   baseURL: API_BASE_URL,

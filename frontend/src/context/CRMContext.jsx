@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { leadAPI, socialAPI } from '../utils/api';
 
 const CRMContext = createContext();
 const STORAGE_KEY = 'crm_workspace_v1';
@@ -207,6 +208,37 @@ function formatRelativeTime(timestamp) {
 
 export function CRMProvider({ children }) {
   const [state, setState] = useState(loadState);
+  const [loading, setLoading] = useState(false);
+  const [backendLeads, setBackendLeads] = useState([]);
+
+  // Fetch real data from backend on mount
+  useEffect(() => {
+    const fetchBackendData = async () => {
+      try {
+        setLoading(true);
+        const token = localStorage.getItem('token');
+        if (!token) {
+          console.log('No auth token, using fallback demo data');
+          return;
+        }
+
+        // Fetch leads from backend
+        const leadsRes = await leadAPI.getAll();
+        console.log('✅ Fetched leads from backend:', leadsRes.data);
+        setBackendLeads(leadsRes.data.data?.leads || []);
+
+        // Fetch socials
+        const socialsRes = await socialAPI.getAccounts();
+        console.log('✅ Fetched social accounts:', socialsRes.data);
+      } catch (error) {
+        console.error('❌ Error fetching backend data:', error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBackendData();
+  }, []);
 
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
@@ -873,6 +905,8 @@ export function CRMProvider({ children }) {
     getLeadTimeline,
     getNextBestAction,
     generateFollowupMessage,
+    loading,
+    backendLeads,
   };
 
   return <CRMContext.Provider value={value}>{children}</CRMContext.Provider>;

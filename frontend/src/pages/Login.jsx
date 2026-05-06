@@ -149,7 +149,7 @@ export function Login() {
     const result = await login(formData.email, formData.password);
     if (result.success) {
       addNotification('Logged in successfully!', 'success');
-      window.location.replace('/dashboard');
+      navigate('/dashboard', { replace: true });
     } else {
       addNotification(result.error || 'Login failed', 'error');
     }
